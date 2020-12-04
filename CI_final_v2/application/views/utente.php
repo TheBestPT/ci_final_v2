@@ -1,0 +1,51 @@
+<?php
+$this->load->view('comuns/header');
+$this->load->view('comuns/menu')
+?>
+
+<?php if ($this->session->flashdata('error') == TRUE): ?>
+	<p><?php echo $this->session->flashdata('error'); ?></p>
+<?php endif; ?>
+<?php if ($this->session->flashdata('success') == TRUE): ?>
+	<p><?php echo $this->session->flashdata('success'); ?></p>
+<?php endif; ?>
+<form method="post" action={guardar} enctype="multipart/form-data">
+	{form}
+		<label>{display}:</label>
+		<input type="{element}" placeholder="{display}" name="{name}">
+	{/form}
+	<div>
+		<label><em>Todos os campos são obrigatórios.</em></label>
+		<input type="submit" value="Save"/>
+	</div>
+</form>
+<h1>Utente</h1>
+<table>
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Nome</th>
+		<th>Numero Utente</th>
+		<th>Morada</th>
+		<th>Consultas</th>
+		<th>Edicao</th>
+	</tr>
+	</thead>
+	<tbody>
+	{items}
+	<tr>
+		<td>{idUtente}</td>
+		<td>{nome}</td>
+		<td>{nUtente}</td>
+		<td>{idMorada}</td>
+		<td>{cons}</td>
+		<td><a href="<?= base_url('UtenteController/del')?>/{idUtente}">Del</a>
+			&nbsp;&nbsp;<a href="<?= base_url('UtenteController/editar/')?>{idUtente}">Update</a></td>
+	</tr>
+	{/items}
+	</tbody>
+</table>
+<center>{links}</center>
+<?
+$this->load->view('comuns/footer');
+?>

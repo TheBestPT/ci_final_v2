@@ -1,0 +1,133 @@
+<?for ($i = 0; $i < count($form); $i++):?>
+			<?if($i != 0):?>
+				<div>
+					<label><?echo $form[$i]?>:</label>
+					<?if($form[$i] == 'idMorada'){
+						$morada = $this->{$model}->getMoradaById($item[$form[$i]]);?>
+						<input type="text" name="<?echo $form[$i]?>" value="<?echo $morada['morada']?>" placeholder="<?echo $form[$i]?>..."/><?
+					}else{?>
+
+					<input type="text" name="<?echo $form[$i]?>" value="<?echo $item[$form[$i]]?>" placeholder="<?echo $form[$i]?>..."/><?}?>
+				</div>
+			<?endif;?>
+		<?endfor;?>
+
+
+
+
+
+<form method="post" action="<?=base_url('EnfermeiroController/guardar')?>" enctype="multipart/form-data">
+	<div>
+		<label>Nome:</label>
+		<input type="text" name="nome" value="<?=set_value('nome')?>" placeholder="Nome..."/>
+	</div>
+	<div>
+		<label>Nif:</label>
+		<input type="text" name="nif" value="<?=set_value('nif')?>" placeholder="Nif..."/>
+	</div>
+	<div>
+		<label>Nib:</label>
+		<input type="text" name="nib" value="<?=set_value('nib')?>" placeholder="Nib..."/>
+	</div>
+	<div>
+		<label>Especialidade:</label>
+		<input type="text" name="especialidade" value="<?=set_value('especialidade')?>" placeholder="Especialidade..."/>
+	</div>
+	<div>
+		<label>Morada:</label>
+		<input type="text" name="idMorada" value="<?=set_value('idMorada')?>" placeholder="Morada..."/>
+	</div>
+	<div>
+		<label><em>Todos os campos são obrigatórios.</em></label>
+		<input type="submit" value="Save"/>
+	</div>
+</form>
+
+
+
+
+
+
+<?if($items != null):?>
+			<?foreach ($items as $enf):?>
+			<tr>
+				<td><?echo $enf->idInferm;?></td>
+				<td><?echo $enf->nome;?></td>
+				<td><?echo $enf->nif;?></td>
+				<td><?echo $enf->nib;?></td>
+				<td><?echo $enf->especialidade;?></td>
+				<?$morada = $this->enfermeiro->getMoradaById($enf->idMorada);?>
+				<td><?echo $morada['morada']?></td>
+				<td><a href="<?= base_url('EnfermeiroController/del')?>/<?echo $enf->idInferm?>">Del</a>
+					&nbsp;&nbsp;<a href="<?= base_url('EnfermeiroController/editar/')?><?echo $enf->idInferm?>">Update</a></td>
+			</tr>
+		<?endforeach;?>
+	<?endif;?>
+
+
+
+
+<?if($items != null):?>
+		<?foreach ($items as $item):?>
+			<tr>
+				<td><?echo $item->nome;?></td>
+				<td><?echo $item->especialidade;?></td>
+			</tr>
+		<?endforeach;?>
+	<?endif;?>
+
+
+
+
+
+
+
+<? foreach ($form as $key => $f):?>
+			<?if($key != $idItem):?>
+				<label><?echo $f?>:</label>
+				<?if($key != 'idMorada' && $key != 'password'){?>
+					<input type="text" name="<?echo $key?>" value="<?echo $item[$key]?>" placeholder="<?echo $f?>..."/>
+				<?}else if($key == 'idMorada'){?>
+					<?$morada = $this->{$model}->getMoradaById($item[$key]);?>
+					<input type="text" name="<?echo $key?>" value="<?echo $morada['morada']?>" placeholder="<?echo $f?>..."/>
+				<?}else if($key == 'password'){?>
+					<input type="password" name="<?echo $key?>" value="" placeholder="<?echo $f?>..."/>
+				<?}?>
+			<?endif;?>
+		<?endforeach;?>
+
+
+
+
+
+
+
+
+/*if($key != 'idMorada' && $key != 'password' && $key != 'idMedico' && $key != 'idUtente' && $key != 'estado'){
+						if(isset($cap[$key]))
+							$form .= '<input type="text" name="'.$key.'" value="'.$cap[$key].'" placeholder="'.$f.'..."/>';
+						else
+							$form .= '<input type="text" name="' . $key . '" value="' . $capUser[$key] . '" placeholder="' . $f . '..."/>';
+					}elseif($key == 'idMorada'){
+						$morada = $this->{$this->loadModel()}->getMoradaById($cap[$key]);
+						$form .= '<input type="text" name="'.$key.'" value="'.$morada['morada'].'" placeholder="'.$f.'..."/>';
+					}elseif($key == 'password'){
+						$form .= '<input type="password" name="'.$key.'" value="" placeholder="'.$f.'..."/>';
+					}elseif ($key == 'idMedico'){
+						$form .= '<label>'.$f.':</label><select name="'.$key.'">';
+						for($i = 0; $i < count($medico); $i++)
+							$form .= '<option value="'.$medico[$i]['idMed'].'">'.$medico[$i]['nome'].'</option>';
+						$form .= '</select>';
+					}elseif($key == 'idUtente'){
+						$form .= '<label>'.$f.':</label><select name="'.$key.'">';
+						for($i = 0; $i < count($utentes); $i++)
+							$form .= '<option value="'.$utentes[$i]['idUtente'].'">'.$utentes[$i]['nome'].'</option>';
+						$form .= '</select>';
+					}*//*elseif ($key == 'idUtente'){
+						$utentes = $this->{$this->loadModel()}->getAllByTable('utente');
+						$form .= '<label>'.$f.':</label><select name="'.$key.'">';
+						for($i = 0; $i < count($utentes); $i++)
+							$form .= '<option value="'.$utentes[$i]['idUtente'].'">'.$utentes[$i]['nome'].'</option></select>';
+						$form .= '</select>';
+					}*//*elseif ($key == 'estado')
+						$form .= '<label>'.$f.':</label><select name="'.$key.'"><option value="0">Em espera</option><option value="1">Concluida</option></select>';*/

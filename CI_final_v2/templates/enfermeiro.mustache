@@ -1,0 +1,72 @@
+<?php
+$this->load->view('comuns/header');
+$this->load->view('comuns/menu')
+?>
+
+<?php if ($this->session->flashdata('error') == TRUE): ?>
+<p><?php echo $this->session->flashdata('error'); ?></p>
+<?php endif; ?>
+<?php if ($this->session->flashdata('success') == TRUE): ?>
+<p><?php echo $this->session->flashdata('success'); ?></p>
+<?php endif; ?>
+{{flashdata}}
+<form method="post" action="<?=base_url('EnfermeiroController/guardar')?>" enctype="multipart/form-data">
+	<div>
+		<label>Nome:</label>
+		<input type="text" name="nome" value="<?=set_value('nome')?>" placeholder="Nome..."/>
+	</div>
+	<div>
+		<label>Nif:</label>
+		<input type="text" name="nif" value="<?=set_value('nif')?>" placeholder="Nif..."/>
+	</div>
+	<div>
+		<label>Nib:</label>
+		<input type="text" name="nib" value="<?=set_value('nib')?>" placeholder="Nib..."/>
+	</div>
+	<div>
+		<label>Especialidade:</label>
+		<input type="text" name="especialidade" value="<?=set_value('especialidade')?>" placeholder="Especialidade..."/>
+	</div>
+	<div>
+		<label>Morada:</label>
+		<input type="text" name="idMorada" value="<?=set_value('idMorada')?>" placeholder="Morada..."/>
+	</div>
+	<div>
+		<label><em>Todos os campos são obrigatórios.</em></label>
+		<input type="submit" value="Save"/>
+	</div>
+</form>
+<h1>Enfermeiro</h1>
+<table>
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Nome</th>
+		<th>Nif</th>
+		<th>Nib</th>
+		<th>Epecialidade</th>
+		<th>Morada</th>
+		<th>Edicao</th>
+	</tr>
+	</thead>
+	<tbody>
+	<?if($items != null):?>
+	<?foreach ($items as $enf):?>
+	<tr>
+		<td><?echo $enf->idInferm;?></td>
+		<td><?echo $enf->nome;?></td>
+		<td><?echo $enf->nif;?></td>
+		<td><?echo $enf->nib;?></td>
+		<td><?echo $enf->especialidade;?></td>
+		<td><?echo $enf->idMorada;?></td>
+		<td><a href="<?= base_url('EnfermeiroController/del')?>/<?echo $enf->idInferm?>">Del</a>
+			&nbsp;&nbsp;<a href="<?= base_url('EnfermeiroController/editar/')?><?echo $enf->idInferm?>">Update</a></td>
+	</tr>
+	<?endforeach;?>
+	<?endif;?>
+	</tbody>
+</table>
+<p><?echo $links;?></p>
+<?
+$this->load->view('comuns/footer');
+?>
