@@ -92,4 +92,19 @@ class MedicoController extends MY_Controller {
 				$it->cons = 'Sem consultas';
 		}
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
+	}
 }

@@ -65,4 +65,39 @@ class ProdutoController extends MY_Controller {
 		}
 		return $items;
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		$item['idReceita'] = $this->uri->segment(3);
+		$item['idProduto'] = $this->uri->segment(4);
+		$red = $this->nomeController().'/addAction/'.$item['idReceita'];
+		$red = 'ReceitaController/addAction/'.$item['idReceita'];
+		echo $red;
+		$status = $this->guardarConEnf($item);
+		if(!$status){
+			$this->session->set_flashdata('error', ERROR_MSG);
+		}else {
+			$this->session->set_flashdata('success', SUCESS_MSG);
+			redirect($red, 'refresh');
+		}
+	}
+
+	public function remAction()
+	{
+		$item['idReceita'] = $this->uri->segment(3);
+		$item['idProduto'] = $this->uri->segment(4);
+		$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idReceita', $item['idReceita'], 'idProduto', $item['idProduto'], 'carrinho');
+		$red = 'ReceitaController/addEnf/'.$item['idReceita'];
+		if(!$status){
+		$this->session->set_flashdata('error', ERROR_MSG);
+		}else {
+			$this->session->set_flashdata('success', SUCESS_MSG);
+			redirect($red, 'refresh');
+		}
+	}
 }

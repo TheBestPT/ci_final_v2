@@ -59,4 +59,19 @@ class ContatosController extends MY_Controller{
 		}
 		return $items;
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
+	}
 }

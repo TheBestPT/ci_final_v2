@@ -81,4 +81,19 @@ class UsersController extends MY_Controller {
 			$it->papel = $this->users->captureWhatUser($it->idUser);
 		}
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
+	}
 }

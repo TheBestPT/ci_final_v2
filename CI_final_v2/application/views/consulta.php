@@ -13,10 +13,15 @@ $this->load->view('comuns/menu')
 		<label>{display}:</label>
 		<input type="{element}" placeholder="{display}" name="{name}">
 	{/form}
-	<select name="">
+	<select name="idUtente">
 		{utentes}
 			<option value="{value}">{display}</option>
 		{/utentes}
+	</select>
+	<select name="idMedico">
+		{medicos}
+		<option value="{value}">{display}</option>
+		{/medicos}
 	</select>
 	<div>
 		<label><em>Todos os campos são obrigatórios.</em></label>
@@ -51,7 +56,7 @@ $this->load->view('comuns/menu')
 		<td><a href="{del}">Del</a>
 			&nbsp;&nbsp;<a href="{update}">Editar</a>
 			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/muda/')?>{idConsulta}">Muda de estado (Concluido ou marcada)</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/addEnf/')?>{idConsulta}">Adicionar Enf</a>
+			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/addAction/')?>{idConsulta}">Adicionar Enf</a>
 			&nbsp;&nbsp;<a href="<?= base_url('ReceitaController/')?>{idConsulta}">Adicionar Receita</a></td>
 	</tr>
 	{/items}

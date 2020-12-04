@@ -93,4 +93,19 @@ class EnfermeiroController extends MY_Controller {
 			$it->idMorada = $this->{$this->loadModel()}->getMoradaById($it->idMorada)['morada'];
 		}
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
+	}
 }

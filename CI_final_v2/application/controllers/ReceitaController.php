@@ -78,6 +78,7 @@ class ReceitaController extends MY_Controller{
 			else
 				$items['produto'] = 'Sem produtos';
 		}
+		print_r($items);
 		$data = [
 			'title' => $this->titleName(),
 			'idReceita' => $items['idReceita'],
@@ -92,7 +93,7 @@ class ReceitaController extends MY_Controller{
 			'form' => $this->form(),
 			'guardar' => base_url($this->nomeController()).'/guardar',
 			'del' => base_url($this->nomeController()).'/del/'.$items['idReceita'],
-			'addprod' => base_url($this->nomeController()).'/addEnf/'.$items['idReceita'],
+			'addprod' => base_url($this->nomeController()).'/addAction/'.$items['idReceita'],
 		];
 		return $data;
 	}
@@ -103,5 +104,33 @@ class ReceitaController extends MY_Controller{
 			$it->del = base_url($this->nomeController()).'/del/'.$it->{$this->idTable()};
 		}
 		return $items;
+	}
+
+	public function addAction()
+	{
+		$id = $this->uri->segment(3);
+		$items = $this->{$this->loadModel()}->getAllByTable('produto');
+		$back = $this->{$this->loadModel()}->getSome($id, 'idReceita', 'receita');
+		$produtoStr = $this->verificaEnfProf($id, 'idProduto', 'idReceita', 'produto', 'descricao');
+		$data = [
+			'title' => $this->titleName(),
+			'items' => $items,
+			'nome' => $produtoStr,
+			'voltar' => base_url('ReceitaController').'/'.$back['idConsulta'],
+			'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
+			'guardar' => base_url($this->nomeController().'/guardarEnf')
+		];
+		$this->parser->parse('addProd', $data);
+
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
 	}
 }

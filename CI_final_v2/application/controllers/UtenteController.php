@@ -80,4 +80,19 @@ class UtenteController extends MY_Controller {
 
 		}
 	}
+
+	public function addAction()
+	{
+		return null;
+	}
+
+	public function guardarAction()
+	{
+		return null;
+	}
+
+	public function remAction()
+	{
+		return null;
+	}
 }

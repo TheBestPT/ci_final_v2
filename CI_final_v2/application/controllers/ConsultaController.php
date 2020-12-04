@@ -40,7 +40,7 @@ class ConsultaController extends MY_Controller {
 
 	public function form()
 	{
-		return [$this->idTable() => ['display' => '', 'element' => 'hidden'],'data' => ['display' => 'Data', 'element' => 'text'],'idMedico' => ['display' => 'Medico', 'element' => 'select'], 'idUtente' => ['display' => 'Utente', 'element' => 'select']];
+		return ['data' => ['display' => 'Data', 'element' => 'text', 'name' => 'data']];
 	}
 
 	public function permissions()
@@ -97,34 +97,33 @@ class ConsultaController extends MY_Controller {
 		$links = $this->pagination->create_links();
 		$items = $this->{$this->loadModel()}->get_pag($config['per_page'], $page);
 		$this->verificacoes($items);
-		$txtElement = $this->form()['data'];
-		$nameSelU = 'idUtente';
-		$nameSelM = 'idMedico';
-		$valueU = [];
 		$utentes = null;
 		$u = $this->{$this->loadModel()}->getAllByTable('utente');
-		foreach ($u as $it) {
-			$utentes[]['display'] = $it['nome'];
-			$utentes[]['value'] = $it['idUtente'];
-		}
+		foreach ($u as $it)
+			$utentes[] = ['display' => $it['nome'], 'value' => $it['idUtente']];
 
-		print_r($utentes);
+		$medicos = null;
+		$m = $this->{$this->loadModel()}->getAllByTable('medico');
+		foreach ($m as $it)
+			$medicos[] = ['display' => $it['nome'], 'value' => $it['idMed']];
 
 		$data = [
 			'title' => $this->titleName(),
 			'guardar' => $this->nomeController().'/guardar',
-			'form' => $txtElement,
+			'form' => $this->form(),
 			'utentes' => $utentes,
+			'medicos' => $medicos,
 			'items' => $items,
 			'links' => $links
 		];
 		return $data;
-		return $this->normalIndex();
 	}
 
 	public function verificacoes($items)
 	{
 		foreach ($items as $it) {
+			$it->del = base_url($this->nomeController()).'/del/'.$it->{$this->idTable()};
+			$it->update = base_url($this->nomeController().'/editar/').$it->{$this->idTable()};
 			if (isset($it->idUtente) && isset($it->idMedico)) {
 				$enf = $this->{$this->loadModel()}->verificaSeEnf($it->idConsulta);
 				$enfermeiroStr = '';
@@ -149,6 +148,51 @@ class ConsultaController extends MY_Controller {
 				$it->idUtente = $this->{$this->loadModel()}->getSome($it->idUtente, 'idUtente', 'utente')['nome'];
 			if(isset($it->estado))
 				$it->estado = $it->estado == 1 ? 'Concluida' : 'Marcada';
+		}
+	}
+
+	public function addAction()
+	{
+		$id = $this->uri->segment(3);
+		$items = $this->{$this->loadModel()}->getAllByTable('enfermeiro');
+		$enfermeiroStr = $this->verificaEnfProf($id, 'idInferm', 'idConsul','enfermeiro', 'nome');
+		$data = [
+			'title' => $this->titleName(),
+			'items' => $items,
+			'nome' => $enfermeiroStr,
+			'voltar' => base_url('ConsultaController'),
+			'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
+			'guardar' => base_url($this->nomeController().'/guardarEnf')
+		];
+		$this->parser->parse('addEnfer', $data);
+
+	}
+
+	public function guardarAction()
+	{
+		$item['idConsulta'] = $this->uri->segment(3);
+		$item['idInfermeiro'] = $this->uri->segment(4);
+		$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
+		$status = $this->guardarConEnf($item);
+		if(!$status){
+			$this->session->set_flashdata('error', ERROR_MSG);
+		}else {
+			$this->session->set_flashdata('success', SUCESS_MSG);
+			redirect($red, 'refresh');
+		}
+	}
+
+	public function remAction()
+	{
+		$item['idConsulta'] = $this->uri->segment(3);
+		$item['idInfermeiro'] = $this->uri->segment(4);
+		$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idConsul', $item['idConsulta'], 'idInferm', $item['idInfermeiro'], 'consultaenfermeiro');
+		$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
+		if(!$status){
+			$this->session->set_flashdata('error', ERROR_MSG);
+		}else {
+			$this->session->set_flashdata('success', SUCESS_MSG);
+			redirect($red, 'refresh');
 		}
 	}
 }

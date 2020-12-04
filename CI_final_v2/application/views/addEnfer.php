@@ -14,8 +14,8 @@ $this->load->view('comuns/menu')
 	{items}
 	<tr>
 		<td>{nome}</td>
-		<td><a href="<?= base_url('ConsultaController/guardarEnf/').$this->uri->segment(3);?>/{idInferm}">Adcionar</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/remEnf/').$this->uri->segment(3);?>/{idInferm}">Del</a></td>
+		<td><a href="<?= base_url('ConsultaController/guardarAction/').$this->uri->segment(3);?>/{idInferm}">Adcionar</a>
+			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/remAction/').$this->uri->segment(3);?>/{idInferm}">Del</a></td>
 	</tr>
 	{/items}
 	</tbody>

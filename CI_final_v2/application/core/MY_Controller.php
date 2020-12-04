@@ -11,6 +11,7 @@ abstract class MY_Controller extends CI_Controller {
 		define('ERROR_MSG', 'Não foi possível inserir o item.');
 		define('SUCESS_MSG', 'Item inserido com sucesso.');
 		define('REMOVE_MSG', 'Item eliminado');
+		//$this->red = $this->nomeController() != 'ReceitaController' ? $this->nomeController() : $this->nomeController().$this->uri->segment(2);
 		$this->red = $this->nomeController();
 	}
 
@@ -127,77 +128,7 @@ abstract class MY_Controller extends CI_Controller {
 		$this->parser->parse('details', $data);
 	}
 
-	public function guardarEnf(){
-		if($this->loadModel() == 'consulta') {
-			$item['idConsulta'] = $this->uri->segment(3);
-			$item['idInfermeiro'] = $this->uri->segment(4);
-			$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
-			$status = $this->guardarConEnf($item);
-		}else{
-			$item['idReceita'] = $this->uri->segment(3);
-			$item['idProduto'] = $this->uri->segment(4);
-			$red = 'ReceitaController/addEnf/'.$item['idReceita'];
-			$status = $this->guardarConEnf($item);
-		}
-		if(!$status){
-			$this->session->set_flashdata('error', ERROR_MSG);
-		}else{
-			$this->session->set_flashdata('success', SUCESS_MSG);
-			redirect($red, 'refresh');
-		}
-	}
-
-	public function remEnf(){
-		if($this->loadModel() == 'consulta'){
-			$item['idConsulta'] = $this->uri->segment(3);
-			$item['idInfermeiro'] = $this->uri->segment(4);
-			$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idConsul', $item['idConsulta'], 'idInferm', $item['idInfermeiro'], 'consultaenfermeiro');
-			$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
-		}else{
-			$item['idReceita'] = $this->uri->segment(3);
-			$item['idProduto'] = $this->uri->segment(4);
-			$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idReceita', $item['idReceita'], 'idProduto', $item['idProduto'], 'carrinho');
-			$red = 'ReceitaController/addEnf/'.$item['idReceita'];
-		}
-		if(!$status){
-			$this->session->set_flashdata('error', ERROR_MSG);
-		}else{
-			$this->session->set_flashdata('success', SUCESS_MSG);
-			redirect($red, 'refresh');
-		}
-	}
-
-	public function addEnf(){
-		$id = $this->uri->segment(3);
-		if($this->loadModel() == 'consulta') {
-			$items = $this->{$this->loadModel()}->getAllByTable('enfermeiro');
-			$enfermeiroStr = $this->verificaEnfProf($id, 'idInferm', 'idConsul','enfermeiro', 'nome');
-			$data = [
-				'title' => $this->titleName(),
-				'items' => $items,
-				'nome' => $enfermeiroStr,
-				'voltar' => base_url('ConsultaController'),
-				'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
-				'guardar' => base_url($this->nomeController().'/guardarEnf')
-			];
-			$this->parser->parse('addEnfer', $data);
-		}else{
-			$items = $this->{$this->loadModel()}->getAllByTable('produto');
-			$back = $this->{$this->loadModel()}->getSome($id, 'idReceita', 'receita');
-			$produtoStr = $this->verificaEnfProf($id, 'idProduto', 'idReceita', 'produto', 'descricao');
-			$data = [
-				'title' => $this->titleName(),
-				'items' => $items,
-				'nome' => $produtoStr,
-				'voltar' => base_url('ReceitaController').'/'.$back['idConsulta'],
-				'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
-				'guardar' => base_url($this->nomeController().'/guardarEnf')
-			];
-			$this->parser->parse('addProd', $data);
-		}
-	}
-
-	private function guardarConEnf($item){
+	protected function guardarConEnf($item){
 		if($this->loadModel() == 'consulta'){
 			$data['idConsul'] = $item['idConsulta'];
 			$data['idInferm'] = $item['idInfermeiro'];
@@ -224,69 +155,6 @@ abstract class MY_Controller extends CI_Controller {
 		}
 		return $form;
 	}
-
-	/*protected function verificacoes($items){
-		foreach ($items as $it){
-			$it->del = base_url($this->nomeController()).'/del/'.$it->{$this->idTable()};
-			$it->update = base_url($this->nomeController().'/editar/').$it->{$this->idTable()};
-			if(isset($it->idUser))
-				$it->papel = $this->users->captureWhatUser($it->idUser);
-			if(isset($it->permissions)){
-				if($it->permissions != '')
-					$it->permissions = implode(',' , unserialize($it->permissions));
-				else
-					$it->permissions = 'Sem permissoes';
-			}
-			if(isset($it->idMorada))
-				$it->idMorada = $this->{$this->loadModel()}->getMoradaById($it->idMorada)['morada'];
-			if(isset($it->idMedico))
-				$it->idMedico = $this->{$this->loadModel()}->getSome($it->idMedico, 'idMed', 'medico')['nome'];
-			if(isset($it->idUtente) && $this->loadModel() == 'consulta')
-				$it->idUtente = $this->{$this->loadModel()}->getSome($it->idUtente, 'idUtente', 'utente')['nome'];
-			if(isset($it->estado))
-				$it->estado = $it->estado == 1 ? 'Concluida' : 'Marcada';
-			if(isset($it->idInferm)){
-				$it->details = base_url($this->nomeController()).'/details/'.$it->{$this->idTable()};
-				$enf = $this->{$this->loadModel()}->get_count_from_table_where($it->idInferm, 'idInferm', 'consultaenfermeiro');
-				if(isset($enf))
-					$it->consultas = $enf.' consultas por fazer';
-				else
-					$it->consultas = 'Sem consultas';
-			}
-			if(isset($it->idUtente) && isset($it->idMedico) && $this->loadModel() != 'receita'){
-				$enf = $this->{$this->loadModel()}->verificaSeEnf($it->idConsulta);
-				$enfermeiroStr = '';
-				if(isset($enf))
-					foreach ($enf as $e)
-						if($it->idConsulta == $e['idConsul']) {
-							$enfermeiroStr .= $this->{$this->loadModel()}->getSome($e['idInferm'], 'idInferm', 'enfermeiro')['nome'].' ';
-							$it->enfermeiro = $enfermeiroStr;
-						}else
-							$it->enfermeiro = '';
-				else
-					$it->enfermeiro = 'Sem enfermeiros';
-				$verReceita = $this->{$this->loadModel()}->getSome($it->idConsulta, 'idConsulta', 'receita');
-				if(isset($verReceita))
-					$it->rec = 'Tem receita';
-				else
-					$it->rec = 'Não tem receita';
-			}elseif (isset($it->idMed)){
-				$it->details = base_url($this->nomeController()).'/details/'.$it->{$this->idTable()};
-				$consultas = $this->{$this->loadModel()}->get_count_from_table_where($it->idMed, 'idMedico', 'consulta');
-				if(isset($consultas))
-					$it->cons = $consultas.' consultas por fazer';
-				else
-					$it->cons = 'Sem consultas';
-			}elseif (isset($it->idUtente) && $this->loadModel() == 'utente'){
-				$utentes = $this->{$this->loadModel()}->get_count_from_table_where($it->idUtente, 'idUtente', 'consulta');
-				if(isset($utentes))
-					$it->cons = $utentes.' consultas por fazer';
-				else
-					$it->cons = 'Sem consultas';
-			}
-		}
-		return $items;
-	}*/
 
 	protected function setPassword($password, $item){
 		$passwordHashed = $this->{$this->loadModel()}->mdPassword($item['password']);
@@ -417,4 +285,10 @@ abstract class MY_Controller extends CI_Controller {
 	public abstract function indexConf($id);
 
 	public abstract function verificacoes($items);
+
+	public abstract function addAction();
+
+	public abstract function guardarAction();
+
+	public abstract function remAction();
 }
