@@ -1,8 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
-
 <?php if ($this->session->flashdata('error') == TRUE): ?>
 	<p><?php echo $this->session->flashdata('error'); ?></p>
 <?php endif; ?>
@@ -42,6 +37,3 @@ $this->load->view('comuns/menu')
 	</tbody>
 </table>
 <center>{links}</center>
-<?
-$this->load->view('comuns/footer');
-?>

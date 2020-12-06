@@ -42,8 +42,9 @@ class ReceitaController extends MY_Controller{
 	{
 		switch ($what){
 			case 'guardar':
+				$this->red = $this->nomeController().'/'.$item['idConsulta'];
 				$ver = $this->{$this->loadModel()}->getSome($item['idConsulta'], 'idConsulta', 'receita');
-				$red = $this->nomeController().'/'.$item['idConsulta'];
+				//$red = $this->nomeController().'/'.$item['idConsulta'];
 				if ($this->upload->do_upload('receita'))
 					$data = array('upload_data' => $this->upload->data());
 				$item['receita'] = $data['upload_data']['file_name'];
@@ -53,6 +54,7 @@ class ReceitaController extends MY_Controller{
 				}
 				return $item;
 			case 'del':
+				$this->red = $this->nomeController().'/'.$item['idConsulta'];
 				$this->{$this->loadModel()}->delItem('idReceita', $item['idReceita'], 'carrinho');
 				return $item;
 			default:
@@ -78,7 +80,6 @@ class ReceitaController extends MY_Controller{
 			else
 				$items['produto'] = 'Sem produtos';
 		}
-		print_r($items);
 		$data = [
 			'title' => $this->titleName(),
 			'idReceita' => $items['idReceita'],
@@ -120,7 +121,10 @@ class ReceitaController extends MY_Controller{
 			'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
 			'guardar' => base_url($this->nomeController().'/guardarEnf')
 		];
+		$this->parser->parse('comuns/header', $i = ['title' => 'Adicionar Enfermeiros']);
+		$this->load->view('comuns/menu');
 		$this->parser->parse('addProd', $data);
+		$this->load->view('comuns/footer');
 
 	}
 
@@ -130,6 +134,11 @@ class ReceitaController extends MY_Controller{
 	}
 
 	public function remAction()
+	{
+		return null;
+	}
+
+	public function editar()
 	{
 		return null;
 	}

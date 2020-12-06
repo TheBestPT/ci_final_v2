@@ -142,12 +142,12 @@ class ConsultaController extends MY_Controller {
 				else
 					$it->rec = 'Não tem receita';
 			}
-			if(isset($it->idMedico))
-				$it->idMedico = $this->{$this->loadModel()}->getSome($it->idMedico, 'idMed', 'medico')['nome'];
-			if(isset($it->idUtente) && $this->loadModel() == 'consulta')
-				$it->idUtente = $this->{$this->loadModel()}->getSome($it->idUtente, 'idUtente', 'utente')['nome'];
-			if(isset($it->estado))
-				$it->estado = $it->estado == 1 ? 'Concluida' : 'Marcada';
+			$it->idMedico = $this->{$this->loadModel()}->getSome($it->idMedico, 'idMed', 'medico')['nome'];
+			$it->idUtente = $this->{$this->loadModel()}->getSome($it->idUtente, 'idUtente', 'utente')['nome'];
+			$it->muda = base_url('ConsultaController/muda/').$it->idConsulta;
+			$it->addEnf = base_url('ConsultaController/addAction/').$it->idConsulta;
+			$it->addRec = base_url('ReceitaController/').$it->idConsulta;
+			$it->estado = $it->estado == 1 ? 'Concluida' : 'Marcada';
 		}
 	}
 
@@ -156,6 +156,11 @@ class ConsultaController extends MY_Controller {
 		$id = $this->uri->segment(3);
 		$items = $this->{$this->loadModel()}->getAllByTable('enfermeiro');
 		$enfermeiroStr = $this->verificaEnfProf($id, 'idInferm', 'idConsul','enfermeiro', 'nome');
+		foreach ($items as $it){
+			$it['add'] = base_url('ConsultaController/guardarAction/').$id.'/'.$it['idInferm'];
+			$it['del'] = base_url(base_url('ConsultaController/remAction/')).$id.$it['idInferm'];
+		}
+		print_r($items);
 		$data = [
 			'title' => $this->titleName(),
 			'items' => $items,
@@ -164,15 +169,17 @@ class ConsultaController extends MY_Controller {
 			'idCon' => base_url($this->nomeController().'/guardarEnf/').$id,
 			'guardar' => base_url($this->nomeController().'/guardarEnf')
 		];
+		$this->parser->parse('comuns/header', $i = ['title' => 'Adicionar Enfermeiros']);
+		$this->load->view('comuns/menu');
 		$this->parser->parse('addEnfer', $data);
-
+		$this->load->view('comuns/footer');
 	}
 
 	public function guardarAction()
 	{
 		$item['idConsulta'] = $this->uri->segment(3);
 		$item['idInfermeiro'] = $this->uri->segment(4);
-		$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
+		$red = 'ConsultaController/addAction/'.$item['idConsulta'];
 		$status = $this->guardarConEnf($item);
 		if(!$status){
 			$this->session->set_flashdata('error', ERROR_MSG);
@@ -187,12 +194,43 @@ class ConsultaController extends MY_Controller {
 		$item['idConsulta'] = $this->uri->segment(3);
 		$item['idInfermeiro'] = $this->uri->segment(4);
 		$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idConsul', $item['idConsulta'], 'idInferm', $item['idInfermeiro'], 'consultaenfermeiro');
-		$red = 'ConsultaController/addEnf/'.$item['idConsulta'];
+		$red = 'ConsultaController/addAction/'.$item['idConsulta'];
 		if(!$status){
 			$this->session->set_flashdata('error', ERROR_MSG);
 		}else {
 			$this->session->set_flashdata('success', SUCESS_MSG);
 			redirect($red, 'refresh');
 		}
+	}
+
+	public function editar()
+	{
+		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
+		$id =$this->uri->segment(3);
+		$list = $this->{$this->loadModel()}->GetById($id);
+		$utentes = null;
+		$u = $this->{$this->loadModel()}->getAllByTable('utente');
+		foreach ($u as $it)
+			$utentes[] = ['display' => $it['nome'], 'value' => $it['idUtente']];
+
+		$medicos = null;
+		$m = $this->{$this->loadModel()}->getAllByTable('medico');
+		foreach ($m as $it)
+			$medicos[] = ['display' => $it['nome'], 'value' => $it['idMed']];
+
+
+		$data = [
+			'title' => 'Edit '.$this->titleName(),
+			'guardar' => base_url($this->nomeController()).'/guardar',
+			'data' => $list['data'],
+			'utentes' => $utentes,
+			'medicos' => $medicos,
+			'idItem' => $this->idTable(),
+			'id' => $id
+		];
+		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+		$this->load->view('comuns/menu');
+		$this->parser->parse($this->loadModel().'_edit', $data);
+		$this->load->view('comuns/footer');
 	}
 }

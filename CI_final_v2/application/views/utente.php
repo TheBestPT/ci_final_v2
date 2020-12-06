@@ -1,8 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
-
 <?php if ($this->session->flashdata('error') == TRUE): ?>
 	<p><?php echo $this->session->flashdata('error'); ?></p>
 <?php endif; ?>
@@ -39,13 +34,10 @@ $this->load->view('comuns/menu')
 		<td>{nUtente}</td>
 		<td>{idMorada}</td>
 		<td>{cons}</td>
-		<td><a href="<?= base_url('UtenteController/del')?>/{idUtente}">Del</a>
-			&nbsp;&nbsp;<a href="<?= base_url('UtenteController/editar/')?>{idUtente}">Update</a></td>
+		<td><a href="{del}">Del</a>
+			&nbsp;&nbsp;<a href="{update}">Update</a></td>
 	</tr>
 	{/items}
 	</tbody>
 </table>
 <center>{links}</center>
-<?
-$this->load->view('comuns/footer');
-?>

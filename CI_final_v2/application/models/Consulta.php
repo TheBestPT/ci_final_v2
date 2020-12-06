@@ -15,6 +15,14 @@ class Consulta extends MY_Model {
 			return null;
 	}
 
+	public function verificaSeProd($idReceita){
+		$this->db->where('idReceita', $idReceita);
+		$query = $this->db->get('carrinho');
+		if ($query->num_rows() > 0)
+			return $query->result_array();
+		else
+			return null;
+	}
 
 	public function setTable()
 	{

@@ -1,8 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
-
 <?php if ($this->session->flashdata('error') == TRUE): ?>
 	<p><?php echo $this->session->flashdata('error'); ?></p>
 <?php endif; ?>
@@ -18,6 +13,3 @@ $this->load->view('comuns/menu')
 	<p>Username: {username}</p>
 	<p>Email: {email}</p>
 <a href="{back}">Voltar:</a>
-<?
-$this->load->view('comuns/footer');
-?>

@@ -1,7 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
 <h1>{title}</h1>
 <table>
 	<thead>
@@ -26,6 +22,3 @@ $this->load->view('comuns/menu')
 	</tbody>
 </table>
 <center>{links}</center>
-<?
-$this->load->view('comuns/footer');
-?>

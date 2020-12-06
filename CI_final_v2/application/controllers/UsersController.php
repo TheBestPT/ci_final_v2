@@ -38,7 +38,7 @@ class UsersController extends MY_Controller {
 
 	public function form()
 	{
-		return [$this->idTable() => ['display' => '', 'element' => 'hidden'], 'username' => ['display' => 'Username', 'element' => 'text'], 'fullname' => ['display' => 'Fullname', 'element' => 'text'], 'email' => ['display' => 'Email', 'element' => 'text'], 'password' => ['display' => 'Password', 'element' => 'password'], 'permissions' => ['display' => 'Permissions', 'element' => 'text']];
+		return ['username' => ['display' => 'Username', 'element' => 'text', 'name' => 'username'], 'fullname' => ['display' => 'Fullname', 'element' => 'text', 'name' => 'fullname'], 'email' => ['display' => 'Email', 'element' => 'text', 'name' => 'email'], 'password' => ['display' => 'Password', 'element' => 'password', 'name' => 'password'], 'permissions' => ['display' => 'Permissions', 'element' => 'text', 'name' => 'permissions']];
 	}
 
 	public function permissions()
@@ -48,7 +48,7 @@ class UsersController extends MY_Controller {
 
 	public function irregularItems($item, $what, $id)
 	{
-		switch ($item){
+		switch ($what){
 			case 'guardar':
 				return $this->userSettings($item);
 			case 'editar':
@@ -95,5 +95,31 @@ class UsersController extends MY_Controller {
 	public function remAction()
 	{
 		return null;
+	}
+
+	public function editar()
+	{
+		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
+		$data['title'] = 'Edit '.$this->titleName();
+		$data['id'] = $this->uri->segment(3);
+		$data['model'] = $this->loadModel();
+		$id =$this->uri->segment(3);
+		$list = $this->{$this->loadModel()}->GetById($id);
+		$perms = '';
+		if($list['permissions'] != '') $perms = implode(',' , unserialize($list['permissions']));
+		$data = [
+			'title' => 'Edit '.$this->titleName(),
+			'guardar' => base_url($this->nomeController()).'/guardar',
+			'username' => $list['username'],
+			'fullname' => $list['fullname'],
+			'email' => $list['email'],
+			'permissions' => $perms,
+			'idItem' => $this->idTable(),
+			'id' => $id
+		];
+		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+		$this->load->view('comuns/menu');
+		$this->parser->parse($this->loadModel().'_edit', $data);
+		$this->load->view('comuns/footer');
 	}
 }

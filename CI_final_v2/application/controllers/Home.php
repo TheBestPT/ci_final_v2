@@ -12,6 +12,9 @@ class Home extends CI_Controller {
 		$data = [
 			'title' => 'Home'
 		];
+		$this->parser->parse('comuns/header', $data);
+		$this->load->view('comuns/menu');
 		$this->parser->parse('home', $data);
+		$this->load->view('comuns/footer');
 	}
 }

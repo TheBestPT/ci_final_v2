@@ -1,7 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
 <h1>Adcionar enfermeiros a consulta</h1>
 <table>
 	<thead>
@@ -23,6 +19,3 @@ $this->load->view('comuns/menu')
 <h1>Enfermeiros já adicionados</h1>
 <p><b>{nome}</b></p>
 <p><a href="{voltar}">Voltar</a></p>
-<?
-$this->load->view('comuns/footer');
-?>

@@ -11,8 +11,6 @@ abstract class MY_Controller extends CI_Controller {
 		define('ERROR_MSG', 'Não foi possível inserir o item.');
 		define('SUCESS_MSG', 'Item inserido com sucesso.');
 		define('REMOVE_MSG', 'Item eliminado');
-		//$this->red = $this->nomeController() != 'ReceitaController' ? $this->nomeController() : $this->nomeController().$this->uri->segment(2);
-		$this->red = $this->nomeController();
 	}
 
 	public function index()
@@ -21,16 +19,28 @@ abstract class MY_Controller extends CI_Controller {
 		if($this->loadModel() == 'receita') $id = $this->uri->segment(2);
 		$data = $this->indexConf($id);
 		if($this->form_validation->run() == FALSE && $this->verifyLogin())
-			if($this->verifyPermissions())
+			if($this->verifyPermissions()) {
+				$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+				$this->load->view('comuns/menu');
 				$this->parser->parse($this->loadModel(), $data);
-			else
+				$this->load->view('comuns/footer');
+			}else {
+				$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+				$this->load->view('comuns/menu');
 				$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);
-		else
-			$this->parser->parse($this->loadModel().'_view', $data);
+				$this->load->view('comuns/footer');
+			}
+		else {
+			$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+			$this->load->view('comuns/menu');
+			$this->parser->parse($this->loadModel() . '_view', $data);
+			$this->load->view('comuns/footer');
+		}
 	}
 
 	public function guardar(){
 		$validacao = $this->verification();
+		$this->red = $this->nomeController();
 		if($validacao){
 			$item =$this->input->post();
 			if(!array_key_exists($this->idTable(), $item)){
@@ -55,6 +65,7 @@ abstract class MY_Controller extends CI_Controller {
 	public function del(){
 		if(!$this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
 		$id = $this->uri->segment(3);
+		$this->red = $this->nomeController();
 		if(is_null($id))
 			redirect($this->nomeController(), 'refresh');
 		$item = $this->{$this->loadModel()}->GetById($id);
@@ -68,31 +79,10 @@ abstract class MY_Controller extends CI_Controller {
 		redirect($this->red, 'refresh');
 	}
 
-	public function editar(){
-		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
-		$data['title'] = 'Edit '.$this->titleName();
-		$data['id'] = $this->uri->segment(3);
-		$data['model'] = $this->loadModel();
-		$id =$this->uri->segment(3);
-		$list = $this->{$this->loadModel()}->GetById($id);
-		$form = null;
-		foreach ($this->form() as $key => $item){
-			$item[]['value'] = $list[$key];
-		}
-		print_r($form);
-		$data = [
-			'title' => 'Edit '.$this->titleName(),
-			'guardar' => base_url($this->nomeController()).'/guardar',
-			'form' => $form,
-			'idItem' => $this->idTable(),
-			'id' => $id
-		];
-		$this->parser->parse($this->loadModel().'_edit', $data);
-	}
-
 	private function editApply($id){
 		if(!$this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
 		$validacao = $this->verification();
+		$this->red = $this->nomeController();
 		if($validacao){
 			$item = $this->input->post();
 			$item = $this->irregularItems($item, 'editar', $id);
@@ -138,24 +128,6 @@ abstract class MY_Controller extends CI_Controller {
 		}
 	}
 
-	private function modelarForm(){
-		$form = '';
-		$item = $this->form();
-		foreach ($item as $key => $f){
-			if($key != $this->idTable()) {
-				if ($key == 'idMedico') {
-					$form .= '<label>' . $f['display'] . ':</label><select name="' . $key . '">';
-					$form .= $this->selectModelar($this->{$this->loadModel()}->getAllByTable('medico'), 'idMed');
-				}elseif($key == 'idUtente'){
-					$form .= '<label>' . $f['display'] . ':</label><select name="' . $key . '">';
-					$form .= $this->selectModelar($this->{$this->loadModel()}->getAllByTable('utente'), $key);
-				}else
-					$form .= '<label>'.$f['display'].':</label><input type="'.$f['element'].'" name="'.$key.'" placeholder="'.$f['display'].'">';
-			}
-		}
-		return $form;
-	}
-
 	protected function setPassword($password, $item){
 		$passwordHashed = $this->{$this->loadModel()}->mdPassword($item['password']);
 		return $passwordHashed;
@@ -167,11 +139,11 @@ abstract class MY_Controller extends CI_Controller {
 	}
 
 
-	private function verifyLogin(){
+	protected function verifyLogin(){
 		return $this->users->isLoggedIn();
 	}
 
-	private function verifyPermissions(){
+	protected function verifyPermissions(){
 		$userTable  = $this->session->userdata('user');
 		$user = $this->users->GetById($userTable['idUser']);
 		$permissions = unserialize($user['permissions']);
@@ -194,7 +166,7 @@ abstract class MY_Controller extends CI_Controller {
 
 	protected function userCreate($item, $flag, $id){
 		if($this->loadModel() == 'medico')//porque um medico tem de gerir as consultas
-			$user['permissions'] = $this->serializePerm('consulta');
+			$user['permissions'] = $this->serializePerm('consulta,receita');
 		$item['password'] = $this->setPassword($item['password'], $item);
 		$user['username'] = $item['username'];
 		$user['fullname'] = $item['fullname'];
@@ -291,4 +263,6 @@ abstract class MY_Controller extends CI_Controller {
 	public abstract function guardarAction();
 
 	public abstract function remAction();
+
+	public abstract function editar();
 }

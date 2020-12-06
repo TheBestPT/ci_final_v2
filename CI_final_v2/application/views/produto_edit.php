@@ -4,12 +4,12 @@
 <?php if ($this->session->flashdata('success') == TRUE): ?>
 	<p><?php echo $this->session->flashdata('success'); ?></p>
 <?php endif; ?>
-<h3>Aqui pode deixar uma menasagem para nos ajudar a melhorar!!!!!!!!</h3>
-<form method="post" action="{guardar}" enctype="multipart/form-data">
-	{form}
-		<label>{display}:</label>
-		<input type="{element}" placeholder="{display}" name="{name}">
-	{/form}
+<form method="post" action={guardar} enctype="multipart/form-data">
+	<label>Descricao:</label>
+	<input type="text" placeholder="Descricao..." name="descricao" value="{descricao}">
+	<label>Preco:</label>
+	<input type="text" placeholder="Preco..." name="preco" value="{preco}">
+	<input type="hidden" name={idItem} value={id}>
 	<div>
 		<label><em>Todos os campos são obrigatórios.</em></label>
 		<input type="submit" value="Save"/>

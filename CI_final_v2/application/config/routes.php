@@ -67,6 +67,7 @@ $route['ConsultaController/remEnf/(:num)'] = $route['ConsultaController'].'/remE
 $route['ConsultaController/delRec/(:num)'] = $route['ConsultaController'].'/delRec/$1';
 $route['ReceitaController'] = 'ReceitaController';
 $route['ReceitaController/(:num)'] = 'ReceitaController';
+$route['ConsultaController/detailsRec/(:num)'] = $route['ConsultaController'].'/detailsRec/$1';
 $route['ReceitaController/(:num)/del/(:num)'] = $route['ReceitaController'].'del/$2';
 $route['ConsultaController/receita/(:num)'] = $route['ConsultaController'].'/receita/$1';
 $route['ConsultaController/(:num)'] = 'ConsultaController';

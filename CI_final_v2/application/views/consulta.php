@@ -1,7 +1,3 @@
-<?php
-$this->load->view('comuns/header');
-$this->load->view('comuns/menu')
-?>
 <?php if ($this->session->flashdata('error') == TRUE): ?>
 	<p><?php echo $this->session->flashdata('error'); ?></p>
 <?php endif; ?>
@@ -55,14 +51,11 @@ $this->load->view('comuns/menu')
 		<td>{rec}</td>
 		<td><a href="{del}">Del</a>
 			&nbsp;&nbsp;<a href="{update}">Editar</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/muda/')?>{idConsulta}">Muda de estado (Concluido ou marcada)</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/addAction/')?>{idConsulta}">Adicionar Enf</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ReceitaController/')?>{idConsulta}">Adicionar Receita</a></td>
+			&nbsp;&nbsp;<a href="{muda}">Muda de estado (Concluido ou marcada)</a>
+			&nbsp;&nbsp;<a href="{addEnf}">Adicionar Enf</a>
+			&nbsp;&nbsp;<a href="{addRec}">Adicionar Receita</a></td>
 	</tr>
 	{/items}
 	</tbody>
 </table>
-<center><?echo $links;?></center>
-<?
-$this->load->view('comuns/footer');
-?>
+<center>{links}</center>

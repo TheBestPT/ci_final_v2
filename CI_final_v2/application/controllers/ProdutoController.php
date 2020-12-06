@@ -92,12 +92,35 @@ class ProdutoController extends MY_Controller {
 		$item['idReceita'] = $this->uri->segment(3);
 		$item['idProduto'] = $this->uri->segment(4);
 		$status = $this->{$this->loadModel()}->delItemWithTwoWheres('idReceita', $item['idReceita'], 'idProduto', $item['idProduto'], 'carrinho');
-		$red = 'ReceitaController/addEnf/'.$item['idReceita'];
+		$red = 'ReceitaController/addAction/'.$item['idReceita'];
 		if(!$status){
 		$this->session->set_flashdata('error', ERROR_MSG);
 		}else {
 			$this->session->set_flashdata('success', SUCESS_MSG);
 			redirect($red, 'refresh');
 		}
+	}
+
+	public function editar()
+	{
+		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
+		$data['title'] = 'Edit '.$this->titleName();
+		$data['id'] = $this->uri->segment(3);
+		$data['model'] = $this->loadModel();
+		$id =$this->uri->segment(3);
+		$list = $this->{$this->loadModel()}->GetById($id);
+
+		$data = [
+			'title' => 'Edit '.$this->titleName(),
+			'guardar' => base_url($this->nomeController()).'/guardar',
+			'descricao' => $list['descricao'],
+			'preco' => $list['preco'],
+			'idItem' => $this->idTable(),
+			'id' => $id
+		];
+		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+		$this->load->view('comuns/menu');
+		$this->parser->parse($this->loadModel().'_edit', $data);
+		$this->load->view('comuns/footer');
 	}
 }

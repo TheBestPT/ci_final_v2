@@ -9,6 +9,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?echo base_url()?>css/estilo.css">
 	<title>{title}</title>
 </head>
-	</head>
+	</html>
 	<body>
-	
