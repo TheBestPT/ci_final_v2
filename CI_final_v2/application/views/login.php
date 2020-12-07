@@ -1,5 +1,3 @@
-<?php $this->load->view('comuns/header');
-$this->load->view('comuns/menu');?>
 <style>
 	body {font-family: Arial, Helvetica, sans-serif;}
 	form {border: 3px solid #f1f1f1;}
@@ -64,6 +62,7 @@ $this->load->view('comuns/menu');?>
 	}
 </style>
 <?php
+
 echo (isset($login_success))? $login_success:'';
 echo (isset($login_error))? $login_error:'';
 ?>

@@ -109,17 +109,13 @@ class EnfermeiroController extends MY_Controller {
 		return null;
 	}
 
-	public function editar()
+	public function editarData()
 	{
-		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
-		$data['title'] = 'Edit '.$this->titleName();
-		$data['id'] = $this->uri->segment(3);
-		$data['model'] = $this->loadModel();
 		$id =$this->uri->segment(3);
 		$list = $this->{$this->loadModel()}->GetById($id);
 		$user = $this->{$this->loadModel()}->getSome($list['idUser'], 'idUser', 'users');
 
-		$data = [
+		return $data = [
 			'title' => 'Edit '.$this->titleName(),
 			'guardar' => base_url($this->nomeController()).'/guardar',
 			'nome' => $list['nome'],
@@ -133,9 +129,5 @@ class EnfermeiroController extends MY_Controller {
 			'idItem' => $this->idTable(),
 			'id' => $id
 		];
-		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
-		$this->load->view('comuns/menu');
-		$this->parser->parse($this->loadModel().'_edit', $data);
-		$this->load->view('comuns/footer');
 	}
 }

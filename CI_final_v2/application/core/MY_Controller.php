@@ -7,10 +7,6 @@ abstract class MY_Controller extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model($this->loadModel());
-		$this->load->model('users');
-		define('ERROR_MSG', 'Não foi possível inserir o item.');
-		define('SUCESS_MSG', 'Item inserido com sucesso.');
-		define('REMOVE_MSG', 'Item eliminado');
 	}
 
 	public function index()
@@ -21,18 +17,18 @@ abstract class MY_Controller extends CI_Controller {
 		if($this->form_validation->run() == FALSE && $this->verifyLogin())
 			if($this->verifyPermissions()) {
 				$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
-				$this->load->view('comuns/menu');
+				$this->loadMenu(true);
 				$this->parser->parse($this->loadModel(), $data);
 				$this->load->view('comuns/footer');
 			}else {
 				$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
-				$this->load->view('comuns/menu');
+				$this->loadMenu(true);
 				$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);
 				$this->load->view('comuns/footer');
 			}
 		else {
 			$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
-			$this->load->view('comuns/menu');
+			$this->loadMenu();
 			$this->parser->parse($this->loadModel() . '_view', $data);
 			$this->load->view('comuns/footer');
 		}
@@ -79,6 +75,15 @@ abstract class MY_Controller extends CI_Controller {
 		redirect($this->red, 'refresh');
 	}
 
+	public function editar(){
+		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
+		$data = $this->editarData();
+		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+		$this->loadMenu(true);
+		$this->parser->parse($this->loadModel().'_edit', $data);
+		$this->load->view('comuns/footer');
+	}
+
 	private function editApply($id){
 		if(!$this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
 		$validacao = $this->verification();
@@ -115,7 +120,10 @@ abstract class MY_Controller extends CI_Controller {
 			'email' => $userDetails['email'],
 			'back' => base_url($this->nomeController())
 		];
+		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
+		$this->loadMenu(true);
 		$this->parser->parse('details', $data);
+		$this->load->view('comuns/footer');
 	}
 
 	protected function guardarConEnf($item){
@@ -146,6 +154,8 @@ abstract class MY_Controller extends CI_Controller {
 	protected function verifyPermissions(){
 		$userTable  = $this->session->userdata('user');
 		$user = $this->users->GetById($userTable['idUser']);
+		if($user['permissions'] == '')
+			return false;
 		$permissions = unserialize($user['permissions']);
 		for($i = 0; $i < count($permissions) ; $i++){
 			if($permissions[$i] == $this->permissions())
@@ -165,7 +175,7 @@ abstract class MY_Controller extends CI_Controller {
 	}
 
 	protected function userCreate($item, $flag, $id){
-		if($this->loadModel() == 'medico')//porque um medico tem de gerir as consultas
+		if($this->loadModel() == 'medico')//porque um medico tem de gerir as consultas e receitas
 			$user['permissions'] = $this->serializePerm('consulta,receita');
 		$item['password'] = $this->setPassword($item['password'], $item);
 		$user['username'] = $item['username'];
@@ -229,14 +239,27 @@ abstract class MY_Controller extends CI_Controller {
 		$links = $this->pagination->create_links();
 		$items = $this->{$this->loadModel()}->get_pag($config['per_page'], $page);
 		$this->verificacoes($items);
-		$data = [
+		$form_error = $this->session->flashdata('error') == TRUE ? $this->session->flashdata('error') : null;
+		$form_sucess = $this->session->flashdata('success') == TRUE ? $this->session->flashdata('success') : null;
+		return $data = [
 			'title' => $this->titleName(),
 			'guardar' => $this->nomeController().'/guardar',
 			'form' => $this->form(),
 			'items' => $items,
-			'links' => $links
+			'links' => $links,
+			'form_error' => $form_error,
+			'form_sucess' => $form_sucess
 		];
-		return $data;
+	}
+
+	public function loadMenu($flag = false){
+		$menu = $flag ? menuArray() : menuWithoutPerm();
+		$this->parser->parse('comuns/menu', $menuLi = [
+			'menu' => $menu,
+			'home' => base_url(),
+			'urlLogin' => $this->users->isLoggedIn() ? base_url('Logout') : base_url('Login'),
+			'urlBtn' => $this->users->isLoggedIn() ? 'Logout: '.$this->session->userdata('user')['username'] : 'Login'
+		]);
 	}
 	public abstract function loadModel();
 
@@ -264,5 +287,5 @@ abstract class MY_Controller extends CI_Controller {
 
 	public abstract function remAction();
 
-	public abstract function editar();
+	public abstract function editarData();
 }

@@ -29,13 +29,30 @@ class Login extends CI_Controller {
 	            $this->data['login_error'] = 'User n�o exite';
 	    }
 	    $this->data['title'] = 'Login';
+		$this->parser->parse('comuns/header', $i = ['title' => 'Login']);
+		$this->parser->parse('comuns/menu', $menuLi = [
+			'menu' => menuWithoutPerm(),
+			'home' => base_url(),
+			'urlLogin' => $this->users->isLoggedIn() ? base_url('Logout') : base_url('Login'),
+			'urlBtn' => $this->users->isLoggedIn() ? 'Logout: '.$this->session->userdata('user')['username'] : 'Login'
+		]);
 	    $this->load->view('login',$this->data);
+		$this->load->view('comuns/footer');
 	}	
 	
 	public function logout(){
 	    session_destroy();
 	    $this->data['login_success'] = 'logout com sucesso!!!';
+		$this->data['title'] = 'Login';
+		$this->parser->parse('comuns/header', $i = ['title' => 'Login']);
+		$this->parser->parse('comuns/menu', $menuLi = [
+			'menu' => menuWithoutPerm(),
+			'home' => base_url(),
+			'urlLogin' => $this->users->isLoggedIn() ? base_url('Logout') : base_url('Login'),
+			'urlBtn' => $this->users->isLoggedIn() ? 'Logout: '.$this->session->userdata('user')['username'] : 'Login'
+		]);
 	    $this->load->view('login',$this->data);
+		$this->load->view('comuns/footer');
 	}
 	
 }// controller Login

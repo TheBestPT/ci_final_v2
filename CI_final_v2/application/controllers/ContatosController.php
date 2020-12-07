@@ -75,7 +75,7 @@ class ContatosController extends MY_Controller{
 		return null;
 	}
 
-	public function editar()
+	public function editarData()
 	{
 		return null;
 	}

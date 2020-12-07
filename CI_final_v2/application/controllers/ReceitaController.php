@@ -44,13 +44,12 @@ class ReceitaController extends MY_Controller{
 			case 'guardar':
 				$this->red = $this->nomeController().'/'.$item['idConsulta'];
 				$ver = $this->{$this->loadModel()}->getSome($item['idConsulta'], 'idConsulta', 'receita');
-				//$red = $this->nomeController().'/'.$item['idConsulta'];
 				if ($this->upload->do_upload('receita'))
 					$data = array('upload_data' => $this->upload->data());
 				$item['receita'] = $data['upload_data']['file_name'];
 				if(isset($ver)) {
-					redirect($this->nomeController().'/'.$item['idConsulta'], 'refresh');
 					$this->session->set_flashdata('error', 'Não pode ter mais que uma receita');
+					redirect($this->nomeController().'/'.$item['idConsulta'], 'refresh');
 				}
 				return $item;
 			case 'del':
@@ -80,6 +79,8 @@ class ReceitaController extends MY_Controller{
 			else
 				$items['produto'] = 'Sem produtos';
 		}
+		$form_error = $this->session->flashdata('error') == TRUE ? $this->session->flashdata('error') : null;
+		$form_sucess = $this->session->flashdata('success') == TRUE ? $this->session->flashdata('success') : null;
 		$data = [
 			'title' => $this->titleName(),
 			'idReceita' => $items['idReceita'],
@@ -95,6 +96,8 @@ class ReceitaController extends MY_Controller{
 			'guardar' => base_url($this->nomeController()).'/guardar',
 			'del' => base_url($this->nomeController()).'/del/'.$items['idReceita'],
 			'addprod' => base_url($this->nomeController()).'/addAction/'.$items['idReceita'],
+			'form_error' => $form_error,
+			'form_sucess' => $form_sucess
 		];
 		return $data;
 	}
@@ -110,9 +113,13 @@ class ReceitaController extends MY_Controller{
 	public function addAction()
 	{
 		$id = $this->uri->segment(3);
-		$items = $this->{$this->loadModel()}->getAllByTable('produto');
+		$items = $this->{$this->loadModel()}->getAllByTable('produto', true);
 		$back = $this->{$this->loadModel()}->getSome($id, 'idReceita', 'receita');
 		$produtoStr = $this->verificaEnfProf($id, 'idProduto', 'idReceita', 'produto', 'descricao');
+		foreach ($items as $it){
+				$it->add = base_url('ProdutoController/guardarAction/').$id.'/'.$it->idProduto;
+			$it->del = base_url('ProdutoController/remAction/').$id.'/'.$it->idProduto;
+		}
 		$data = [
 			'title' => $this->titleName(),
 			'items' => $items,
@@ -122,7 +129,7 @@ class ReceitaController extends MY_Controller{
 			'guardar' => base_url($this->nomeController().'/guardarEnf')
 		];
 		$this->parser->parse('comuns/header', $i = ['title' => 'Adicionar Enfermeiros']);
-		$this->load->view('comuns/menu');
+		$this->loadMenu(true);
 		$this->parser->parse('addProd', $data);
 		$this->load->view('comuns/footer');
 
@@ -138,7 +145,7 @@ class ReceitaController extends MY_Controller{
 		return null;
 	}
 
-	public function editar()
+	public function editarData()
 	{
 		return null;
 	}

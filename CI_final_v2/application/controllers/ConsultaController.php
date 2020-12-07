@@ -57,20 +57,6 @@ class ConsultaController extends MY_Controller {
 		redirect($this->nomeController(), 'refresh');
 	}
 
-
-
-
-
-
-	/*private function guardarConEnf($item){
-		//$data['idConsulta'] = $item[''];
-		$data['idConsul'] = $item['idConsulta'];
-		$data['idInferm'] = $item['idInfermeiro'];
-		print_r($data);
-		return $this->{$this->loadModel()}->insertSomeItem($data, 'consultaenfermeiro');
-	}*/
-
-
 	public function irregularItems($item, $what, $id)
 	{
 		switch ($what){
@@ -106,7 +92,8 @@ class ConsultaController extends MY_Controller {
 		$m = $this->{$this->loadModel()}->getAllByTable('medico');
 		foreach ($m as $it)
 			$medicos[] = ['display' => $it['nome'], 'value' => $it['idMed']];
-
+		$form_error = $this->session->flashdata('error') == TRUE ? $this->session->flashdata('error') : null;
+		$form_sucess = $this->session->flashdata('success') == TRUE ? $this->session->flashdata('success') : null;
 		$data = [
 			'title' => $this->titleName(),
 			'guardar' => $this->nomeController().'/guardar',
@@ -114,7 +101,9 @@ class ConsultaController extends MY_Controller {
 			'utentes' => $utentes,
 			'medicos' => $medicos,
 			'items' => $items,
-			'links' => $links
+			'links' => $links,
+			'form_error' => $form_error,
+			'form_sucess' => $form_sucess
 		];
 		return $data;
 	}
@@ -154,13 +143,12 @@ class ConsultaController extends MY_Controller {
 	public function addAction()
 	{
 		$id = $this->uri->segment(3);
-		$items = $this->{$this->loadModel()}->getAllByTable('enfermeiro');
+		$items = $this->{$this->loadModel()}->getAllByTable('enfermeiro', true);
 		$enfermeiroStr = $this->verificaEnfProf($id, 'idInferm', 'idConsul','enfermeiro', 'nome');
 		foreach ($items as $it){
-			$it['add'] = base_url('ConsultaController/guardarAction/').$id.'/'.$it['idInferm'];
-			$it['del'] = base_url(base_url('ConsultaController/remAction/')).$id.$it['idInferm'];
+			$it->add = base_url('ConsultaController/guardarAction/').$id.'/'.$it->idInferm;
+			$it->del = base_url('ConsultaController/remAction/').$id.'/'.$it->idInferm;
 		}
-		print_r($items);
 		$data = [
 			'title' => $this->titleName(),
 			'items' => $items,
@@ -170,7 +158,7 @@ class ConsultaController extends MY_Controller {
 			'guardar' => base_url($this->nomeController().'/guardarEnf')
 		];
 		$this->parser->parse('comuns/header', $i = ['title' => 'Adicionar Enfermeiros']);
-		$this->load->view('comuns/menu');
+		$this->loadMenu(true);
 		$this->parser->parse('addEnfer', $data);
 		$this->load->view('comuns/footer');
 	}
@@ -203,23 +191,19 @@ class ConsultaController extends MY_Controller {
 		}
 	}
 
-	public function editar()
+	public function editarData()
 	{
-		if($this->verifyLogin()) if(!$this->verifyPermissions()){$this->parser->parse('perm', $title = ['title' => $this->titleName(), 'voltar' => base_url('home')]);return;}
 		$id =$this->uri->segment(3);
 		$list = $this->{$this->loadModel()}->GetById($id);
 		$utentes = null;
 		$u = $this->{$this->loadModel()}->getAllByTable('utente');
 		foreach ($u as $it)
 			$utentes[] = ['display' => $it['nome'], 'value' => $it['idUtente']];
-
 		$medicos = null;
 		$m = $this->{$this->loadModel()}->getAllByTable('medico');
 		foreach ($m as $it)
 			$medicos[] = ['display' => $it['nome'], 'value' => $it['idMed']];
-
-
-		$data = [
+		return $data = [
 			'title' => 'Edit '.$this->titleName(),
 			'guardar' => base_url($this->nomeController()).'/guardar',
 			'data' => $list['data'],
@@ -228,9 +212,5 @@ class ConsultaController extends MY_Controller {
 			'idItem' => $this->idTable(),
 			'id' => $id
 		];
-		$this->parser->parse('comuns/header', $i = ['title' => $this->titleName()]);
-		$this->load->view('comuns/menu');
-		$this->parser->parse($this->loadModel().'_edit', $data);
-		$this->load->view('comuns/footer');
 	}
 }

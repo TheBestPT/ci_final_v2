@@ -1,3 +1,5 @@
+<p>{form_error}</p>
+<p>{form_sucess}</p>
 <h1>{title}</h1>
 <table>
 	<thead>

@@ -10,8 +10,8 @@
 	{items}
 	<tr>
 		<td>{nome}</td>
-		<td><a href="<?= base_url('ConsultaController/guardarAction/').$this->uri->segment(3);?>/{idInferm}">Adcionar</a>
-			&nbsp;&nbsp;<a href="<?= base_url('ConsultaController/remAction/').$this->uri->segment(3);?>/{idInferm}">Del</a></td>
+		<td><a href="{add}">Adcionar</a>
+			&nbsp;&nbsp;<a href="{del}">Del</a></td>
 	</tr>
 	{/items}
 	</tbody>

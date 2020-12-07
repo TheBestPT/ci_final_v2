@@ -1,9 +1,5 @@
-<?php if ($this->session->flashdata('error') == TRUE): ?>
-	<p><?php echo $this->session->flashdata('error'); ?></p>
-<?php endif; ?>
-<?php if ($this->session->flashdata('success') == TRUE): ?>
-	<p><?php echo $this->session->flashdata('success'); ?></p>
-<?php endif; ?>
+<p>{form_error}</p>
+<p>{form_sucess}</p>
 <form method="post" action={guardar} enctype="multipart/form-data">
 	{form}
 		<label>{display}:</label>

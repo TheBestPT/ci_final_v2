@@ -80,12 +80,12 @@ abstract class MY_Model extends CI_Model{
 		return $query->row_array();
 	}
 
-	function getAllByTable($table){
+	function getAllByTable($table, $flag = false){
 		if(is_null($table))
 			return;
 		$query = $this->db->get($table);
 		if ($query->num_rows() > 0)
-			return $query->result_array();
+			return $flag ? $query->result() : $query->result_array();
 		else
 			return null;
 	}

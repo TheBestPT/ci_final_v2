@@ -1,9 +1,3 @@
-<?php if ($this->session->flashdata('error') == TRUE): ?>
-	<p><?php echo $this->session->flashdata('error'); ?></p>
-<?php endif; ?>
-<?php if ($this->session->flashdata('success') == TRUE): ?>
-	<p><?php echo $this->session->flashdata('success'); ?></p>
-<?php endif; ?>
 <form method="post" action={guardar} enctype="multipart/form-data">
 	<label>Nome:</label>
 	<input type="text" placeholder="Nome..." name="nome" value="{nome}">
